@@ -5,14 +5,14 @@ from flask_sqlalchemy import SQLAlchemy
 from sensyne.db import db
 from sensyne.api import bp
 from sensyne.utils import init_db
+from sensyne.config import DevConfig
 
+def create_app(config_object=None):
+    if config_object is None:
+        config_object = DevConfig
 
-def create_app(**config_kwargs):
     app = Flask('sensyne')
-
-    for conf_key, conf_val in config_kwargs.items():
-        app.config[conf_key] = conf_val
-
+    app.config.from_object(config_object)
     swagger = Swagger(app)
 
     app.register_blueprint(bp, url_prefix='/v1')
@@ -23,7 +23,5 @@ def create_app(**config_kwargs):
 
 
 if __name__ == "__main__":
-    app = create_app({
-        'SQLALCHEMY_DATABASE_URI': 'postgresql://postgres:postgres@db-sensyne/sensyne'
-    })
+    app = create_app()
     app.run(debug=True)
