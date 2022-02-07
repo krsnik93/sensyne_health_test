@@ -1,0 +1,27 @@
+version: "2.1"
+
+x-postgres-vars: &postgres-vars
+  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_USER: "postgres"
+  POSTGRES_DB: "sensyne"
+  POSTGRES_HOST: "db-sensyne"
+  POSTGRES_PORT: 5432
+
+services:
+  db-sensyne:
+    image: postgres:13
+    environment: *postgres-vars
+
+  backend:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: python:3.8-buster
+    ports:
+      - "5000:5000"
+    environment:
+      <<: *postgres-vars
+    volumes:
+      - ./:/app
+    depends_on:
+      - db-sensyne
